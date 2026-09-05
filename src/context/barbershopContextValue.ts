@@ -1,0 +1,103 @@
+import { createContext } from "react";
+
+import type { Barber, GalleryItem, Plan, Product, Service } from "@/data/barbershop";
+import { defaultConfig, type BarbershopConfig } from "@/lib/storage";
+
+export type BarbershopContextValue = {
+  config: BarbershopConfig;
+  csrfToken: string | null;
+  authenticated: boolean;
+  dirty: boolean;
+  saving: boolean;
+  configSource: "cloudflare" | "fallback";
+  barbershop: BarbershopConfig["barbershop"];
+  barbers: Barber[];
+  services: Service[];
+  plans: Plan[];
+  products: Product[];
+  gallery: GalleryItem[];
+  activeServices: Service[];
+  activeBarbers: Barber[];
+  activePlans: Plan[];
+  activeProducts: Product[];
+  activeGallery: GalleryItem[];
+  setConfigDraft: (value: BarbershopConfig) => void;
+  loadAdmin: () => Promise<boolean>;
+  login: (password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  publishChanges: () => Promise<void>;
+  updateBarbershop: (value: BarbershopConfig["barbershop"]) => void;
+  saveBarber: (value: Barber) => void;
+  addBarber: (value: Barber) => void;
+  deleteBarber: (id: string) => void;
+  saveService: (value: Service) => void;
+  addService: (value: Service) => void;
+  deleteService: (id: string) => void;
+  savePlan: (value: Plan) => void;
+  addPlan: (value: Plan) => void;
+  deletePlan: (id: string) => void;
+  saveProduct: (value: Product) => void;
+  addProduct: (value: Product) => void;
+  deleteProduct: (id: string) => void;
+  saveGalleryItem: (value: GalleryItem) => void;
+  addGalleryItem: (value: GalleryItem) => void;
+  deleteGalleryItem: (id: string) => void;
+  restoreDefaults: () => void;
+  importBackup: (json: string) => void;
+  exportBackup: () => string;
+  uploadImage: (file: File) => Promise<string>;
+  queueImageDeletion: (url: string) => void;
+};
+
+const noop = () => {};
+const asyncNoop = async () => {};
+
+export const defaultBarbershopContextValue: BarbershopContextValue = {
+  config: defaultConfig,
+  csrfToken: null,
+  authenticated: false,
+  dirty: false,
+  saving: false,
+  configSource: "fallback",
+  barbershop: defaultConfig.barbershop,
+  barbers: defaultConfig.barbers,
+  services: defaultConfig.services,
+  plans: defaultConfig.plans,
+  products: defaultConfig.products,
+  gallery: defaultConfig.gallery,
+  activeServices: defaultConfig.services.filter((service) => service.active),
+  activeBarbers: defaultConfig.barbers.filter((barber) => barber.active),
+  activePlans: defaultConfig.plans.filter((plan) => plan.active),
+  activeProducts: defaultConfig.products.filter((product) => product.active),
+  activeGallery: defaultConfig.gallery.filter((item) => item.active),
+  setConfigDraft: noop,
+  loadAdmin: async () => false,
+  login: asyncNoop,
+  logout: asyncNoop,
+  publishChanges: asyncNoop,
+  updateBarbershop: noop,
+  saveBarber: noop,
+  addBarber: noop,
+  deleteBarber: noop,
+  saveService: noop,
+  addService: noop,
+  deleteService: noop,
+  savePlan: noop,
+  addPlan: noop,
+  deletePlan: noop,
+  saveProduct: noop,
+  addProduct: noop,
+  deleteProduct: noop,
+  saveGalleryItem: noop,
+  addGalleryItem: noop,
+  deleteGalleryItem: noop,
+  restoreDefaults: noop,
+  importBackup: noop,
+  exportBackup: () => "{}",
+  uploadImage: async () => "",
+  queueImageDeletion: noop,
+};
+
+export const BarbershopContext = createContext<BarbershopContextValue>(
+  defaultBarbershopContextValue,
+);

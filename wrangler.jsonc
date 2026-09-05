@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "barbearia-assis",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-09-04",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "SITE_URL": "https://barbearia-assis.assisbarbearia.workers.dev"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "SITE_CONFIG",
+      "id": "6ed553cfc24942cfa75897e9ffdfc5d9"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "SITE_ASSETS",
+      "bucket_name": "barbearia-assis-assets"
+    }
+  ]
+}
