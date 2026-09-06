@@ -30,7 +30,8 @@ export default async function handler(request: Request) {
         time: String(body.time || ""),
         notes: String(body.notes || ""),
       });
-      return jsonResponse({ appointment }, { status: 201 });
+      const { accessCode: _accessCode, ...publicAppointment } = appointment;
+      return jsonResponse({ appointment: publicAppointment }, { status: 201 });
     }
     return methodNotAllowed(["GET", "POST"]);
   } catch (error) {
