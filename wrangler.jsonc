@@ -20,5 +20,12 @@
       "binding": "SITE_ASSETS",
       "bucket_name": "barbearia-assis-assets"
     }
+  ],
+  "d1_databases": [
+    {
+      "binding": "APPOINTMENTS_DB",
+      "database_name": "barbearia-assis-agenda",
+      "database_id": "e93eede4-a5b2-40c1-8579-76c205342a15"
+    }
   ]
 }
