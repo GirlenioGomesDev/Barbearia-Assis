@@ -3,6 +3,7 @@ import {
   listAppointments,
   updateAppointmentStatus,
 } from "../../src/lib/server/appointment-storage";
+import { recordUsageForCompletedAppointment } from "../../src/lib/server/membership-storage";
 import {
   errorResponse,
   jsonResponse,
@@ -34,11 +35,12 @@ export default async function handler(request: Request) {
     }
     if (request.method === "PATCH") {
       const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-      const appointment = await updateAppointmentStatus(
-        String(body.id || ""),
-        String(body.status || "") as AppointmentStatus,
-      );
-      return jsonResponse({ appointment });
+      const status = String(body.status || "") as AppointmentStatus;
+      const appointment = await updateAppointmentStatus(String(body.id || ""), status);
+      const membership = status === "completed"
+        ? await recordUsageForCompletedAppointment(appointment).catch(() => null)
+        : null;
+      return jsonResponse({ appointment, membership });
     }
     return methodNotAllowed(["GET", "POST", "PATCH"]);
   } catch (error) {
