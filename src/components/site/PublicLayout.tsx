@@ -60,6 +60,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
                 {item.label}
               </Link>
             ))}
+            <a href="/meu-plano" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Meu plano</a>
             <Link
               to="/agendamento"
               className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
@@ -92,6 +93,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
                 {item.label}
               </Link>
             ))}
+            <a href="/meu-plano" onClick={() => setOpen(false)} className="border-b border-border/40 py-3 text-sm font-semibold text-muted-foreground">Meu plano / Meu histórico</a>
             <Link
               to="/agendamento"
               onClick={() => setOpen(false)}
@@ -112,6 +114,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
                 <CalendarDays className="h-4 w-4 text-primary" />
                 Abrir agenda
               </Link>
+              <a href="/clientes-planos" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2 border-b border-border/40 py-2 text-sm font-semibold text-muted-foreground"><CalendarDays className="h-4 w-4 text-primary" />Clientes com plano</a>
               <Link
                 to="/admin"
                 onClick={() => setOpen(false)}
@@ -137,6 +140,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
               </span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">{barbershop.description}</p>
+            <a href="/meu-plano" className="mt-4 inline-block text-xs font-semibold text-primary">Consultar meu plano e histórico</a>
           </div>
 
           <div className="text-sm">
@@ -184,6 +188,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
                 <CalendarDays className="h-4 w-4" />
                 Agenda do barbeiro
               </Link>
+              <a href="/clientes-planos" className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary"><CalendarDays className="h-4 w-4" />Clientes com plano</a>
               <Link
                 to="/admin"
                 className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary"
