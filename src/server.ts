@@ -1,8 +1,11 @@
 import app from "@tanstack/react-start/server-entry";
 
 import configHandler from "../api/config";
+import appointmentsHandler from "../api/appointments";
 import robotsHandler from "../api/robots";
 import sitemapHandler from "../api/sitemap";
+import adminAppointmentsHandler from "../api/admin/appointments";
+import adminBlocksHandler from "../api/admin/blocks";
 import adminConfigHandler from "../api/admin/config";
 import imageHandler from "../api/admin/image";
 import loginHandler from "./server/login";
@@ -16,6 +19,9 @@ type ApiHandler = (request: Request) => Promise<Response> | Response;
 
 const apiRoutes: Record<string, ApiHandler> = {
   "/api/config": configHandler,
+  "/api/appointments": appointmentsHandler,
+  "/api/admin/appointments": adminAppointmentsHandler,
+  "/api/admin/blocks": adminBlocksHandler,
   "/api/admin/config": adminConfigHandler,
   "/api/admin/image": imageHandler,
   "/api/admin/login": loginHandler,
