@@ -13,7 +13,6 @@ export const Route = createFileRoute("/meu-plano")({
 
 function MeuPlanoPage() {
   const [phone, setPhone] = useState("");
-  const [accessCode, setAccessCode] = useState("");
   const [membership, setMembership] = useState<Membership | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,7 +26,7 @@ function MeuPlanoPage() {
       const response = await fetch("/api/membership", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, accessCode }),
+        body: JSON.stringify({ phone }),
       });
       const payload = await response.json().catch(() => ({})) as { membership?: Membership; message?: string };
       if (!response.ok || !payload.membership) throw new Error(payload.message || "Plano nao encontrado.");
@@ -45,9 +44,8 @@ function MeuPlanoPage() {
           <h1 className="mt-2 font-display text-4xl">Meu plano</h1>
           <p className="mt-2 text-sm text-muted-foreground">Consulte quantos atendimentos ja utilizou, quantos ainda restam e veja seu historico de cortes.</p>
 
-          <form onSubmit={submit} className="mt-6 grid gap-3 sm:grid-cols-[1fr_160px_auto] sm:items-end">
+          <form onSubmit={submit} className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="text-sm">Seu WhatsApp<input value={phone} onChange={(e) => setPhone(maskPhone(e.target.value))} className="mt-1 min-h-12 w-full rounded-md border border-border bg-background px-3" placeholder="(81) 99999-9999" required /></label>
-            <label className="text-sm">Codigo de acesso<input value={accessCode} onChange={(e) => setAccessCode(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" className="mt-1 min-h-12 w-full rounded-md border border-border bg-background px-3" placeholder="000000" required /></label>
             <button disabled={loading} className="min-h-12 rounded-md bg-primary px-5 font-bold text-primary-foreground disabled:opacity-50">{loading ? "Consultando..." : "Consultar"}</button>
           </form>
           {message ? <p className="mt-4 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm">{message}</p> : null}
