@@ -8,8 +8,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AgendamentoRouteImport } from './routes/agendamento'
 import { Route as BarbeirosRouteImport } from './routes/barbeiros'
+import { Route as ClientesPlanosRouteImport } from './routes/clientes-planos'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as GaleriaRouteImport } from './routes/galeria'
+import { Route as MeuPlanoRouteImport } from './routes/meu-plano'
+import { Route as MeusAgendamentosRouteImport } from './routes/meus-agendamentos'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as ServicosRouteImport } from './routes/servicos'
@@ -39,6 +42,11 @@ const BarbeirosRoute = BarbeirosRouteImport.update({
   path: '/barbeiros',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientesPlanosRoute = ClientesPlanosRouteImport.update({
+  id: '/clientes-planos',
+  path: '/clientes-planos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContatoRoute = ContatoRouteImport.update({
   id: '/contato',
   path: '/contato',
@@ -47,6 +55,16 @@ const ContatoRoute = ContatoRouteImport.update({
 const GaleriaRoute = GaleriaRouteImport.update({
   id: '/galeria',
   path: '/galeria',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeuPlanoRoute = MeuPlanoRouteImport.update({
+  id: '/meu-plano',
+  path: '/meu-plano',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeusAgendamentosRoute = MeusAgendamentosRouteImport.update({
+  id: '/meus-agendamentos',
+  path: '/meus-agendamentos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanosRoute = PlanosRouteImport.update({
@@ -71,8 +89,11 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AgendaRoute
   '/agendamento': typeof AgendamentoRoute
   '/barbeiros': typeof BarbeirosRoute
+  '/clientes-planos': typeof ClientesPlanosRoute
   '/contato': typeof ContatoRoute
   '/galeria': typeof GaleriaRoute
+  '/meu-plano': typeof MeuPlanoRoute
+  '/meus-agendamentos': typeof MeusAgendamentosRoute
   '/planos': typeof PlanosRoute
   '/produtos': typeof ProdutosRoute
   '/servicos': typeof ServicosRoute
@@ -83,8 +104,11 @@ export interface FileRoutesByTo {
   '/agenda': typeof AgendaRoute
   '/agendamento': typeof AgendamentoRoute
   '/barbeiros': typeof BarbeirosRoute
+  '/clientes-planos': typeof ClientesPlanosRoute
   '/contato': typeof ContatoRoute
   '/galeria': typeof GaleriaRoute
+  '/meu-plano': typeof MeuPlanoRoute
+  '/meus-agendamentos': typeof MeusAgendamentosRoute
   '/planos': typeof PlanosRoute
   '/produtos': typeof ProdutosRoute
   '/servicos': typeof ServicosRoute
@@ -96,8 +120,11 @@ export interface FileRoutesById {
   '/agenda': typeof AgendaRoute
   '/agendamento': typeof AgendamentoRoute
   '/barbeiros': typeof BarbeirosRoute
+  '/clientes-planos': typeof ClientesPlanosRoute
   '/contato': typeof ContatoRoute
   '/galeria': typeof GaleriaRoute
+  '/meu-plano': typeof MeuPlanoRoute
+  '/meus-agendamentos': typeof MeusAgendamentosRoute
   '/planos': typeof PlanosRoute
   '/produtos': typeof ProdutosRoute
   '/servicos': typeof ServicosRoute
@@ -110,8 +137,11 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/agendamento'
     | '/barbeiros'
+    | '/clientes-planos'
     | '/contato'
     | '/galeria'
+    | '/meu-plano'
+    | '/meus-agendamentos'
     | '/planos'
     | '/produtos'
     | '/servicos'
@@ -122,8 +152,11 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/agendamento'
     | '/barbeiros'
+    | '/clientes-planos'
     | '/contato'
     | '/galeria'
+    | '/meu-plano'
+    | '/meus-agendamentos'
     | '/planos'
     | '/produtos'
     | '/servicos'
@@ -134,8 +167,11 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/agendamento'
     | '/barbeiros'
+    | '/clientes-planos'
     | '/contato'
     | '/galeria'
+    | '/meu-plano'
+    | '/meus-agendamentos'
     | '/planos'
     | '/produtos'
     | '/servicos'
@@ -147,8 +183,11 @@ export interface RootRouteChildren {
   AgendaRoute: typeof AgendaRoute
   AgendamentoRoute: typeof AgendamentoRoute
   BarbeirosRoute: typeof BarbeirosRoute
+  ClientesPlanosRoute: typeof ClientesPlanosRoute
   ContatoRoute: typeof ContatoRoute
   GaleriaRoute: typeof GaleriaRoute
+  MeuPlanoRoute: typeof MeuPlanoRoute
+  MeusAgendamentosRoute: typeof MeusAgendamentosRoute
   PlanosRoute: typeof PlanosRoute
   ProdutosRoute: typeof ProdutosRoute
   ServicosRoute: typeof ServicosRoute
@@ -191,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BarbeirosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clientes-planos': {
+      id: '/clientes-planos'
+      path: '/clientes-planos'
+      fullPath: '/clientes-planos'
+      preLoaderRoute: typeof ClientesPlanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contato': {
       id: '/contato'
       path: '/contato'
@@ -203,6 +249,20 @@ declare module '@tanstack/react-router' {
       path: '/galeria'
       fullPath: '/galeria'
       preLoaderRoute: typeof GaleriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meu-plano': {
+      id: '/meu-plano'
+      path: '/meu-plano'
+      fullPath: '/meu-plano'
+      preLoaderRoute: typeof MeuPlanoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meus-agendamentos': {
+      id: '/meus-agendamentos'
+      path: '/meus-agendamentos'
+      fullPath: '/meus-agendamentos'
+      preLoaderRoute: typeof MeusAgendamentosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/planos': {
@@ -235,8 +295,11 @@ const rootRouteChildren: RootRouteChildren = {
   AgendaRoute: AgendaRoute,
   AgendamentoRoute: AgendamentoRoute,
   BarbeirosRoute: BarbeirosRoute,
+  ClientesPlanosRoute: ClientesPlanosRoute,
   ContatoRoute: ContatoRoute,
   GaleriaRoute: GaleriaRoute,
+  MeuPlanoRoute: MeuPlanoRoute,
+  MeusAgendamentosRoute: MeusAgendamentosRoute,
   PlanosRoute: PlanosRoute,
   ProdutosRoute: ProdutosRoute,
   ServicosRoute: ServicosRoute,
