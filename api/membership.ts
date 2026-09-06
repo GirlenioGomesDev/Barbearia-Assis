@@ -5,7 +5,7 @@ export default async function handler(request: Request) {
   try {
     if (request.method !== "POST") return methodNotAllowed(["POST"]);
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-    const membership = await lookupMembership(String(body.phone || ""), String(body.accessCode || ""));
+    const membership = await lookupMembership(String(body.phone || ""));
     return jsonResponse({ membership });
   } catch (error) {
     return errorResponse(error, "Nao foi possivel consultar seu plano.");
