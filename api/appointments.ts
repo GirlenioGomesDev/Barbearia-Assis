@@ -1,4 +1,5 @@
 import { createAppointment, occupiedTimes } from "../src/lib/server/appointment-storage";
+import { assertCustomerCanBook } from "../src/lib/server/customer-appointment-policy";
 import { errorResponse, jsonResponse, methodNotAllowed } from "../src/lib/server/http-auth";
 
 export default async function handler(request: Request) {
@@ -16,13 +17,16 @@ export default async function handler(request: Request) {
       const serviceIds = Array.isArray(body.serviceIds)
         ? body.serviceIds.map((value) => String(value)).filter(Boolean)
         : [];
+      const customerPhone = String(body.customerPhone || "");
+      const date = String(body.date || "");
+      await assertCustomerCanBook(customerPhone, date);
       const appointment = await createAppointment({
         customerName: String(body.customerName || ""),
-        customerPhone: String(body.customerPhone || ""),
+        customerPhone,
         serviceId: String(body.serviceId || ""),
         serviceIds,
         barberId: String(body.barberId || ""),
-        date: String(body.date || ""),
+        date,
         time: String(body.time || ""),
         notes: String(body.notes || ""),
       });
