@@ -22,10 +22,14 @@ export default async function handler(request: Request) {
     requireHttpCsrf(request);
     if (request.method === "POST") {
       const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const serviceIds = Array.isArray(body.serviceIds)
+        ? body.serviceIds.map((value) => String(value)).filter(Boolean)
+        : [];
       const appointment = await createAppointment({
         customerName: String(body.customerName || ""),
         customerPhone: String(body.customerPhone || ""),
         serviceId: String(body.serviceId || ""),
+        serviceIds,
         barberId: String(body.barberId || ""),
         date: String(body.date || ""),
         time: String(body.time || ""),
