@@ -5,8 +5,10 @@ import {
   Scripts,
   createRootRoute,
   useRouter,
+  useRouterState,
 } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { CalendarDays, Copy, Settings } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
@@ -126,10 +128,58 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function BarberAreaQuickNav() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const [copied, setCopied] = useState(false);
+  const isBarberArea = pathname === "/admin" || pathname === "/agenda";
+
+  if (!isBarberArea) return null;
+
+  async function copyAgendaLink() {
+    if (typeof window === "undefined" || !navigator.clipboard) return;
+    await navigator.clipboard.writeText(`${window.location.origin}/agenda`);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  }
+
+  return (
+    <div className="border-b border-border bg-card/80 px-3 py-3 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-2">
+        <span className="mr-auto text-xs font-bold uppercase tracking-[0.16em] text-primary">
+          Área do barbeiro
+        </span>
+        <Link
+          to="/agenda"
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-bold text-primary-foreground"
+        >
+          <CalendarDays className="h-4 w-4" />
+          Agenda
+        </Link>
+        <Link
+          to="/admin"
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border px-3 text-sm font-semibold text-foreground"
+        >
+          <Settings className="h-4 w-4" />
+          Configurar site
+        </Link>
+        <button
+          type="button"
+          onClick={() => void copyAgendaLink()}
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-border px-3 text-sm font-semibold text-muted-foreground transition hover:text-primary"
+        >
+          <Copy className="h-4 w-4" />
+          {copied ? "Link copiado" : "Copiar link da agenda"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function RootComponent() {
   const { config } = Route.useLoaderData();
   return (
     <BarbershopProvider initialConfig={config}>
+      <BarberAreaQuickNav />
       <Outlet />
       <Toaster position="top-center" richColors />
     </BarbershopProvider>

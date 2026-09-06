@@ -1,6 +1,16 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Instagram, Mail, MapPin, Menu, MessageCircle, Phone, X } from "lucide-react";
+import {
+  CalendarDays,
+  Instagram,
+  Mail,
+  MapPin,
+  Menu,
+  MessageCircle,
+  Phone,
+  Settings,
+  X,
+} from "lucide-react";
 
 import { useBarbershop } from "@/hooks/useBarbershop";
 import { instagramLink, whatsappLink } from "@/lib/format";
@@ -85,17 +95,32 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             <Link
               to="/agendamento"
               onClick={() => setOpen(false)}
-              className="py-3 text-sm font-bold text-primary"
+              className="border-b border-border/40 py-3 text-sm font-bold text-primary"
             >
               Agendar horário
             </Link>
-            <Link
-              to="/admin"
-              onClick={() => setOpen(false)}
-              className="py-3 text-sm font-medium text-muted-foreground"
-            >
-              Painel
-            </Link>
+
+            <div className="my-2 rounded-lg border border-primary/30 bg-primary/5 p-3">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                Área do barbeiro
+              </p>
+              <Link
+                to="/agenda"
+                onClick={() => setOpen(false)}
+                className="flex min-h-11 items-center gap-2 border-b border-border/40 py-2 text-sm font-bold text-foreground"
+              >
+                <CalendarDays className="h-4 w-4 text-primary" />
+                Abrir agenda
+              </Link>
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="flex min-h-11 items-center gap-2 py-2 text-sm font-semibold text-muted-foreground"
+              >
+                <Settings className="h-4 w-4 text-primary" />
+                Configurar site
+              </Link>
+            </div>
           </nav>
         </div>
       </header>
@@ -151,12 +176,22 @@ export function PublicLayout({ children }: { children: ReactNode }) {
                 </SocialLink>
               ) : null}
             </div>
-            <Link
-              to="/admin"
-              className="mt-4 inline-block text-xs text-muted-foreground hover:text-primary"
-            >
-              Painel do barbeiro
-            </Link>
+            <div className="mt-4 flex flex-col gap-2">
+              <Link
+                to="/agenda"
+                className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary"
+              >
+                <CalendarDays className="h-4 w-4" />
+                Agenda do barbeiro
+              </Link>
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary"
+              >
+                <Settings className="h-4 w-4" />
+                Configurar site
+              </Link>
+            </div>
           </div>
         </div>
         <div className="border-t border-border/60 py-4 text-center text-xs text-muted-foreground">
