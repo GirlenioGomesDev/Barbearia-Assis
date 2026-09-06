@@ -20,7 +20,6 @@ export const Route = createFileRoute("/meus-agendamentos")({
 
 function CustomerAppointmentsPage() {
   const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,7 @@ function CustomerAppointmentsPage() {
       const response = await fetch("/api/customer/appointments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code }),
+        body: JSON.stringify({ phone }),
       });
       const payload = (await response.json().catch(() => ({}))) as {
         appointments?: Appointment[];
@@ -54,7 +53,7 @@ function CustomerAppointmentsPage() {
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Área do cliente</p>
         <h1 className="mt-2 font-display text-4xl">Meus agendamentos</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Use o WhatsApp informado no agendamento e o código de 6 dígitos recebido ao reservar.
+          Informe o mesmo WhatsApp usado no agendamento para consultar seus horários.
         </p>
 
         <form onSubmit={submit} className="surface-premium mt-6 rounded-xl p-5">
@@ -66,21 +65,12 @@ function CustomerAppointmentsPage() {
             className="mt-1 min-h-12 w-full rounded-md border border-border bg-background px-3"
             required
           />
-          <label className="mt-4 block text-sm font-medium">Código do agendamento</label>
-          <input
-            value={code}
-            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
-            inputMode="numeric"
-            maxLength={6}
-            className="mt-1 min-h-12 w-full rounded-md border border-border bg-background px-3 tracking-[0.3em]"
-            required
-          />
           <button
             type="submit"
             disabled={loading}
             className="mt-5 w-full rounded-md bg-primary py-3 font-bold text-primary-foreground disabled:opacity-50"
           >
-            {loading ? "Consultando..." : "Consultar agendamento"}
+            {loading ? "Consultando..." : "Consultar agendamentos"}
           </button>
         </form>
 
@@ -107,7 +97,7 @@ function CustomerAppointmentsPage() {
 
           {searched && !appointments.length ? (
             <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-              Nenhum agendamento foi encontrado com esses dados.
+              Nenhum agendamento foi encontrado para esse WhatsApp.
             </div>
           ) : null}
         </div>
