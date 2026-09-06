@@ -8,6 +8,8 @@ import {
   type AppointmentStatus,
   type BlockedSlot,
 } from "../appointments";
+import { getAvailableDates, getAvailableTimes } from "../schedule";
+import { isoDate } from "../format";
 import { readPublicConfig } from "./cloudflare-storage";
 import { runtimeEnv } from "./runtime-env";
 
@@ -66,6 +68,24 @@ export async function createAppointment(draft: AppointmentDraft) {
   }
   if (draft.customerName.trim().length < 2 || draft.customerPhone.replace(/\D/g, "").length < 10) {
     throw namedError("ValidationError", "Informe nome e WhatsApp validos.");
+  }
+
+  const validDates = getAvailableDates({
+    barber,
+    futureDays: config.booking.futureDays,
+    blockedDates: config.booking.blockedDates,
+  }).map(isoDate);
+  if (!validDates.includes(draft.date)) {
+    throw namedError("AppointmentConflict", "Essa data nao esta mais disponivel.");
+  }
+  const validTimes = getAvailableTimes({
+    barber,
+    service,
+    date: draft.date,
+    minAdvanceMinutes: config.booking.minAdvanceMinutes,
+  });
+  if (!validTimes.includes(draft.time)) {
+    throw namedError("AppointmentConflict", "Esse horario nao esta mais disponivel.");
   }
 
   const appointments = await listAppointments();
