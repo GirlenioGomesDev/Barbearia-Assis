@@ -21,9 +21,22 @@ export type SiteR2 = {
   delete(key: string): Promise<void>;
 };
 
+export type SiteD1PreparedStatement = {
+  bind(...values: unknown[]): SiteD1PreparedStatement;
+  first<T = Record<string, unknown>>(): Promise<T | null>;
+  all<T = Record<string, unknown>>(): Promise<{ results?: T[] }>;
+  run(): Promise<unknown>;
+};
+
+export type SiteD1 = {
+  prepare(query: string): SiteD1PreparedStatement;
+  batch(statements: SiteD1PreparedStatement[]): Promise<unknown[]>;
+};
+
 export type RuntimeEnv = {
   SITE_CONFIG?: SiteKv;
   SITE_ASSETS?: SiteR2;
+  APPOINTMENTS_DB?: SiteD1;
   ADMIN_PASSWORD_HASH?: string;
   ADMIN_SESSION_SECRET?: string;
   SITE_URL?: string;
