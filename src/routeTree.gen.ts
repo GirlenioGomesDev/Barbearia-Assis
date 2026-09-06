@@ -5,6 +5,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AgendamentoRouteImport } from './routes/agendamento'
 import { Route as BarbeirosRouteImport } from './routes/barbeiros'
 import { Route as ContatoRouteImport } from './routes/contato'
@@ -21,6 +22,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgendamentoRoute = AgendamentoRouteImport.update({
@@ -62,6 +68,7 @@ const ServicosRoute = ServicosRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/agenda': typeof AgendaRoute
   '/agendamento': typeof AgendamentoRoute
   '/barbeiros': typeof BarbeirosRoute
   '/contato': typeof ContatoRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/agenda': typeof AgendaRoute
   '/agendamento': typeof AgendamentoRoute
   '/barbeiros': typeof BarbeirosRoute
   '/contato': typeof ContatoRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/agenda': typeof AgendaRoute
   '/agendamento': typeof AgendamentoRoute
   '/barbeiros': typeof BarbeirosRoute
   '/contato': typeof ContatoRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/agenda'
     | '/agendamento'
     | '/barbeiros'
     | '/contato'
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/agenda'
     | '/agendamento'
     | '/barbeiros'
     | '/contato'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/agenda'
     | '/agendamento'
     | '/barbeiros'
     | '/contato'
@@ -132,6 +144,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AgendaRoute: typeof AgendaRoute
   AgendamentoRoute: typeof AgendamentoRoute
   BarbeirosRoute: typeof BarbeirosRoute
   ContatoRoute: typeof ContatoRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agendamento': {
@@ -212,6 +232,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AgendaRoute: AgendaRoute,
   AgendamentoRoute: AgendamentoRoute,
   BarbeirosRoute: BarbeirosRoute,
   ContatoRoute: ContatoRoute,
