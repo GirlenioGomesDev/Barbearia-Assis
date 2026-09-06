@@ -53,6 +53,7 @@ function appointmentFromRow(row: AppointmentRow): Appointment {
     customerName: row.customer_name,
     customerPhone: row.customer_phone,
     serviceId: row.service_id,
+    serviceIds: row.service_id.split(",").filter(Boolean),
     serviceName: row.service_name,
     barberId: row.barber_id,
     barberName: row.barber_name,
@@ -91,6 +92,10 @@ function slotTimes(startTime: string, durationMinutes: number) {
 
 function blockSlotTimes(startTime: string, endTime: string) {
   return slotTimes(startTime, minutesFromTime(endTime) - minutesFromTime(startTime));
+}
+
+function accessCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
 async function readKvList<T>(key: string): Promise<T[]> {
@@ -189,6 +194,29 @@ export async function listAppointments() {
   return (result.results || []).map(appointmentFromRow);
 }
 
+export async function findCustomerAppointments(phone: string, code: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 10 || !/^\d{6}$/.test(code)) {
+    throw namedError("ValidationError", "Informe WhatsApp e codigo de 6 digitos.");
+  }
+
+  const db = await d1();
+  if (!db) {
+    const appointments = await listAppointments();
+    return appointments.filter(
+      (item) => item.customerPhone.replace(/\D/g, "").endsWith(digits.slice(-11)) && item.accessCode === code,
+    );
+  }
+
+  const result = await db.prepare(
+    `SELECT a.* FROM appointments a
+     INNER JOIN appointment_access x ON x.appointment_id = a.id
+     WHERE a.customer_phone LIKE ? AND x.access_code = ?
+     ORDER BY a.date DESC, a.time DESC`,
+  ).bind(`%${digits.slice(-11)}`, code).all<AppointmentRow>();
+  return (result.results || []).map(appointmentFromRow);
+}
+
 export async function listBlockedSlots() {
   const db = await d1();
   if (!db) return readKvList<BlockedSlot>(BLOCKS_KEY);
@@ -224,9 +252,13 @@ export async function occupiedTimes(barberId: string, date: string) {
 
 export async function createAppointment(draft: AppointmentDraft) {
   const { config } = await readPublicConfig();
-  const service = config.services.find((item) => item.id === draft.serviceId && item.active);
+  const requestedIds = [...new Set((draft.serviceIds?.length ? draft.serviceIds : [draft.serviceId || ""]).filter(Boolean))];
+  const services = requestedIds
+    .map((id) => config.services.find((item) => item.id === id && item.active))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
   const barber = config.barbers.find((item) => item.id === draft.barberId && item.active);
-  if (!service || !barber || !barber.serviceIds.includes(service.id)) {
+
+  if (!requestedIds.length || services.length !== requestedIds.length || !barber || services.some((service) => !barber.serviceIds.includes(service.id))) {
     throw namedError("ValidationError", "Servico ou barbeiro indisponivel.");
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(draft.date) || !/^\d{2}:\d{2}$/.test(draft.time)) {
@@ -235,6 +267,10 @@ export async function createAppointment(draft: AppointmentDraft) {
   if (draft.customerName.trim().length < 2 || draft.customerPhone.replace(/\D/g, "").length < 10) {
     throw namedError("ValidationError", "Informe nome e WhatsApp validos.");
   }
+
+  const totalDuration = services.reduce((sum, item) => sum + item.durationMinutes, 0);
+  const totalPrice = services.reduce((sum, item) => sum + item.price, 0);
+  const aggregateService = { ...services[0]!, durationMinutes: totalDuration };
 
   const validDates = getAvailableDates({
     barber,
@@ -246,7 +282,7 @@ export async function createAppointment(draft: AppointmentDraft) {
   }
   const validTimes = getAvailableTimes({
     barber,
-    service,
+    service: aggregateService,
     date: draft.date,
     minAdvanceMinutes: config.booking.minAdvanceMinutes,
   });
@@ -255,20 +291,23 @@ export async function createAppointment(draft: AppointmentDraft) {
   }
 
   const now = new Date().toISOString();
+  const code = accessCode();
   const appointment: Appointment = {
     id: randomUUID(),
     customerName: draft.customerName.trim(),
     customerPhone: draft.customerPhone.replace(/\D/g, ""),
-    serviceId: service.id,
-    serviceName: service.name,
+    serviceId: requestedIds.join(","),
+    serviceIds: requestedIds,
+    serviceName: services.map((item) => item.name).join(" + "),
     barberId: barber.id,
     barberName: barber.name,
     date: draft.date,
     time: draft.time,
-    durationMinutes: service.durationMinutes,
-    price: service.price,
+    durationMinutes: totalDuration,
+    price: totalPrice,
     notes: draft.notes.trim().slice(0, 500),
     status: "scheduled",
+    accessCode: code,
     createdAt: now,
     updatedAt: now,
   };
@@ -278,14 +317,14 @@ export async function createAppointment(draft: AppointmentDraft) {
     const appointments = await listAppointments();
     const blocks = await listBlockedSlots();
     const conflict = appointments.some(
-      (item) => item.barberId === barber.id && item.date === draft.date && ACTIVE_APPOINTMENT_STATUSES.includes(item.status) && intervalsOverlap(draft.time, service.durationMinutes, item.time, item.durationMinutes),
+      (item) => item.barberId === barber.id && item.date === draft.date && ACTIVE_APPOINTMENT_STATUSES.includes(item.status) && intervalsOverlap(draft.time, totalDuration, item.time, item.durationMinutes),
     );
     const blocked = blocks.some((item) => {
       if (item.barberId !== barber.id || item.date !== draft.date) return false;
       const start = minutesFromTime(item.startTime);
       const end = minutesFromTime(item.endTime);
       const requestedStart = minutesFromTime(draft.time);
-      return requestedStart < end && start < requestedStart + service.durationMinutes;
+      return requestedStart < end && start < requestedStart + totalDuration;
     });
     if (conflict || blocked) throw namedError("AppointmentConflict", "Esse horario acabou de ficar indisponivel. Escolha outro horario.");
     await writeKvList(APPOINTMENTS_KEY, [...appointments, appointment]);
@@ -314,6 +353,8 @@ export async function createAppointment(draft: AppointmentDraft) {
       appointment.createdAt,
       appointment.updatedAt,
     ),
+    db.prepare("INSERT INTO appointment_access (appointment_id, access_code, created_at) VALUES (?, ?, ?)")
+      .bind(appointment.id, code, now),
     ...slotTimes(appointment.time, appointment.durationMinutes).map((slot) =>
       db.prepare(
         "INSERT INTO booking_slots (barber_id, date, slot, owner_type, owner_id) VALUES (?, ?, ?, 'appointment', ?)",

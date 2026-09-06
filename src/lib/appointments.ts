@@ -10,6 +10,7 @@ export type Appointment = {
   customerName: string;
   customerPhone: string;
   serviceId: string;
+  serviceIds?: string[];
   serviceName: string;
   barberId: string;
   barberName: string;
@@ -19,20 +20,21 @@ export type Appointment = {
   price: number;
   notes: string;
   status: AppointmentStatus;
+  accessCode?: string;
   createdAt: string;
   updatedAt: string;
 };
 
-export type AppointmentDraft = Pick<
-  Appointment,
-  | "customerName"
-  | "customerPhone"
-  | "serviceId"
-  | "barberId"
-  | "date"
-  | "time"
-  | "notes"
->;
+export type AppointmentDraft = {
+  customerName: string;
+  customerPhone: string;
+  serviceId?: string;
+  serviceIds?: string[];
+  barberId: string;
+  date: string;
+  time: string;
+  notes: string;
+};
 
 export type BlockedSlot = {
   id: string;
